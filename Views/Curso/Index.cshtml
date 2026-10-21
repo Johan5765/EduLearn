@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Aula.ViewModels.CursoListVM>
+
+@{
+    ViewData["Title"] = "Cursos";
+}
+
+<h2>Cursos</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">
+    Crear curso
+</a>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Profesor</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var curso in Model)
+        {
+            <tr>
+                <td>@curso.Titulo</td>
+                <td>@curso.Descripcion</td>
+                <td>@curso.NombreProfesor</td>
+                <td>@(curso.Activo ? "Activo" : "Inactivo")</td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@curso.CursoId"
+                       class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+
+                    <a asp-action="Gestionar"
+                       asp-route-id="@curso.CursoId"
+                       class="btn btn-success btn-sm">
+                        Entrar al curso
+                    </a>
+
+                    <form asp-action="Delete"
+                          asp-route-id="@curso.CursoId"
+                          method="post"
+                          class="d-inline"
+                          onsubmit="return confirm('¿Seguro que deseas eliminar este curso?');">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

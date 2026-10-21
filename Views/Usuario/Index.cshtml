@@ -1,0 +1,92 @@
+﻿@model IEnumerable<Aula.ViewModels.UsuarioListVM>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Usuarios</h2>
+
+        <a asp-action="Create" class="btn btn-primary">
+            Crear usuario
+        </a>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var usuario in Model)
+            {
+                <tr>
+                    <td>@usuario.Nombre</td>
+                    <td>@usuario.Correo</td>
+                    <td>@usuario.NombreRol</td>
+                    <td>
+                        @if (usuario.Activo)
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactivo</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit"
+                           asp-route-id="@usuario.UsuarioId"
+                           class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+
+                        <button type="button"
+                                onclick="deleteItem(@usuario.UsuarioId)"
+                                class="btn btn-danger btn-sm">
+                            Eliminar
+                        </button>
+
+                        <form id="deleteForm-@usuario.UsuarioId"
+                              asp-controller="Usuario"
+                              asp-action="Delete"
+                              asp-route-id="@usuario.UsuarioId"
+                              method="post"
+                              style="display:none">
+                            @Html.AntiForgeryToken()
+                        </form>
+
+                        
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function deleteItem(id) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "No podrás revertir esta acción.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("deleteForm-" + id).submit();
+                }
+            });
+        }
+    </script>
+}

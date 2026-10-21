@@ -1,0 +1,362 @@
+﻿@using Aula.Models
+@using Aula.ViewModels
+@model CursoGestionViewModel
+
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<div class="container-fluid py-1">
+
+    @if (TempData["Ok"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Ok"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    <!-- Navegación -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-controller="@(Model.PuedeEditar ? "Curso" : "Inscripciones")"
+                   asp-action="@(Model.PuedeEditar ? "Index" : "MisCursos")"
+                   class="text-decoration-none">
+                    Mis cursos
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                @Model.Titulo
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Encabezado del curso -->
+    <div class="d-flex flex-column flex-md-row
+                justify-content-between align-items-md-center gap-3 mb-4">
+
+        <div>
+            <h1 class="h2 fw-bold mb-2">@Model.Titulo</h1>
+            <p class="text-muted mb-0">
+                @if (Model.PuedeEditar)
+                {
+                    <text>Administra el contenido y las actividades de tu curso.</text>
+                }
+                else
+                {
+                    <text>Consulta el contenido y las actividades del curso.</text>
+                }
+            </p>
+        </div>
+
+        @if (Model.PuedeEditar)
+        {
+            <div class ="me-1">
+                <a class="btn btn-primary"
+                   asp-controller="Lecciones"
+                   asp-action="Crear"
+                   asp-route-cursoId="@Model.CursoId">
+                    <span >+</span> Agregar nueva lección
+                </a>
+                <a class="btn btn-outline-secondary"
+                   asp-controller="Inscripciones"
+                   asp-action="Inscritos"
+                   asp-route-cursoId="@Model.CursoId">
+                    Ver Inscritos
+                </a>
+            </div>    
+        }
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 text-primary
+                                rounded-3 p-3">
+                        <span class="fs-3">📚</span>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-1">Lecciones</p>
+                        <h3 class="fw-bold mb-0">
+                            @Model.TotalLecciones
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="bg-success bg-opacity-10 text-success
+                                rounded-3 p-3">
+                        <span class="fs-3">📁</span>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-1">Recursos</p>
+                        <h3 class="fw-bold mb-0">
+                            @Model.TotalRecursos
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-10 text-warning
+                                rounded-3 p-3">
+                        <span class="fs-3">📝</span>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-1">Evaluaciones</p>
+                        <h3 class="fw-bold mb-0">
+                            @Model.TotalEvaluaciones
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Contenido del curso -->
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h2 class="h4 fw-bold mb-0">Contenido del curso</h2>
+        <span class="badge text-bg-primary">@Model.RolEtiqueta</span>
+    </div>
+
+    @if (!Model.Lecciones.Any())
+    {
+        <div class="alert alert-light border text-center py-4">
+            Este curso todavía no tiene lecciones.
+        </div>
+    }
+    else
+    {
+        <div class="accordion" id="accordionLecciones">
+
+            @foreach (var leccion in Model.Lecciones)
+            {
+                var headingId = $"heading-leccion-{leccion.Id}";
+                var collapseId = $"collapse-leccion-{leccion.Id}";
+
+                <div class="accordion-item border-0 shadow-sm mb-3 rounded-3 overflow-hidden">
+
+                    <!-- Encabezado de la lección -->
+                    <h3 class="accordion-header" id="@headingId">
+                        <button class="accordion-button collapsed py-3"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#@collapseId"
+                                aria-expanded="false"
+                                aria-controls="@collapseId">
+
+                            <div class="d-flex flex-column flex-md-row
+                                                justify-content-between align-items-md-center
+                                                gap-2 w-100 me-3">
+
+                                <span class="fw-bold">
+                                    <span class="text-primary me-2">@leccion.Orden.</span>
+                                    @leccion.Titulo
+                                </span>
+
+                                <span class="d-flex flex-wrap gap-2">
+                                    <span class="badge text-bg-light border text-dark">
+                                        @leccion.Recursos.Count recursos
+                                    </span>
+                                    <span class="badge text-bg-light border text-dark">
+                                        @leccion.Evaluaciones.Count evaluaciones
+                                    </span>
+                                </span>
+                            </div>
+                        </button>
+                    </h3>
+
+                    <div id="@collapseId"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="@headingId">
+                        @* Quita data-bs-parent para permitir varias abiertas a la vez.
+                            Si quieres que se abra solo una, agrega:
+                            data-bs-parent="#accordionLecciones" en este div. *@
+
+                        <div class="accordion-body p-3 p-md-4">
+
+                            @if (Model.PuedeEditar)
+                            {
+                                <div class="d-flex flex-wrap gap-2 mb-4">
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       asp-controller="Lecciones"
+                                       asp-action="Editar"
+                                       asp-route-id="@leccion.Id">
+                                        Editar lección
+                                    </a>
+
+                                    <form asp-controller="Lecciones"
+                                          asp-action="Eliminar"
+                                          asp-route-id="@leccion.Id"
+                                          method="post"
+                                          onsubmit="return confirm('¿Eliminar esta lección?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+
+                            <!-- Recursos -->
+                            <div class="mb-4">
+
+                                <h4 class="h6 fw-bold mb-3">Recursos de la lección</h4>
+
+                                @if (leccion.Recursos.Any())
+                                {
+                                    <ul class="list-group mb-3">
+
+                                        @foreach (var r in leccion.Recursos)
+                                        {
+                                            <li class="list-group-item d-flex
+                                                                       justify-content-between align-items-center gap-3">
+
+                                                <span class="text-break">@r.Nombre</span>
+
+                                                <div class="d-flex gap-2 flex-shrink-0">
+
+                                                    @if (r.Tipo == (byte)TipoRecurso.Documento)
+                                                    {
+                                                        <a class="btn btn-outline-primary btn-sm"
+                                                           asp-controller="Recursos"
+                                                           asp-action="Descargar"
+                                                           asp-route-id="@r.Id"
+                                                           aria-label="Descargar @r.Nombre">
+                                                            Descargar
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="btn btn-outline-primary btn-sm"
+                                                           href="@r.Url"
+                                                           target="_blank"
+                                                           rel="noopener noreferrer"
+                                                           aria-label="Abrir @r.Nombre">
+                                                            Abrir recurso
+                                                        </a>
+                                                    }
+
+                                                    @if (Model.PuedeEditar)
+                                                    {
+                                                        <form asp-controller="Recursos"
+                                                              asp-action="Eliminar"
+                                                              asp-route-id="@r.Id"
+                                                              method="post"
+                                                              onsubmit="return confirm('¿Eliminar este recurso?');">
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm">Quitar</button>
+                                                        </form>
+                                                    }
+
+                                                </div>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted small">Aún no hay recursos en esta lección.</p>
+                                }
+
+                                @if (Model.PuedeEditar)
+                                {
+                                    <a class="btn btn-outline-secondary btn-sm"
+                                       asp-controller="Recursos"
+                                       asp-action="Agregar"
+                                       asp-route-leccionId="@leccion.Id">
+                                        + Agregar recurso
+                                    </a>
+                                }
+
+                            </div>
+
+                            <hr class="my-4" />
+
+                            <!-- Evaluaciones -->
+                            <div>
+
+                                <h4 class="h6 fw-bold mb-3">Evaluaciones de la lección</h4>
+
+                                @if (leccion.Evaluaciones.Any())
+                                {
+                                    <ul class="list-group mb-3">
+
+                                        @foreach (var e in leccion.Evaluaciones)
+                                        {
+                                            <li class="list-group-item d-flex
+                                                                       flex-column flex-sm-row
+                                                                       justify-content-between align-items-sm-center gap-3">
+
+                                                <div>
+                                                    <span class="fw-medium">@e.Titulo</span>
+                                                    <div class="small text-muted mt-1">
+                                                        @e.CantidadPreguntas preguntas
+                                                    </div>
+                                                </div>
+
+                                                @if (Model.PuedeEditar)
+                                                {
+                                                    <div class="d-flex gap-2 align-self-start align-self-sm-center">
+                                                        <a class="btn btn-outline-primary btn-sm"
+                                                           asp-controller="Evaluaciones"
+                                                           asp-action="Editar"
+                                                           asp-route-id="@e.Id">
+                                                            Editar evaluación
+                                                        </a>
+
+                                                        <form asp-controller="Evaluaciones"
+                                                              asp-action="Eliminar"
+                                                              asp-route-id="@e.Id"
+                                                              method="post"
+                                                              onsubmit="return confirm('¿Eliminar esta evaluación y todas sus preguntas?');">
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                                                        </form>
+                                                    </div>
+                                                }
+
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted small">Aún no hay evaluaciones en esta lección.</p>
+                                }
+
+                                @if (Model.PuedeEditar)
+                                {
+                                    <a class="btn btn-dark btn-sm"
+                                       asp-controller="Evaluaciones"
+                                       asp-action="Crear"
+                                       asp-route-leccionId="@leccion.Id">
+                                        + Crear evaluación
+                                    </a>
+                                }
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

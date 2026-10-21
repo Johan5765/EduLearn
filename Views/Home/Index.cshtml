@@ -1,0 +1,270 @@
+﻿@model Aula.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Inicio";
+    var autenticado = User.Identity?.IsAuthenticated == true;
+    var nombre = User.Identity?.Name ?? "Usuario";
+}
+
+
+@if (!autenticado)
+{
+    <!-- Portada principal -->
+    <section class="rounded-4 p-4 p-md-5 mb-5 text-center"
+             style="background: linear-gradient(135deg, #1d2b4f, #304773); color: white;">
+
+        <div class="mx-auto py-3 py-md-4" style="max-width: 720px;">
+            <span class="badge rounded-pill px-3 py-2 mb-3"
+                  style="background-color: rgba(255,255,255,0.15); color: white;">
+                Plataforma de aprendizaje
+            </span>
+
+            <h1 class="display-4 fw-bold mb-3">
+                Aprende a tu ritmo con <span style="color: #b9d1ff;">EduLearn</span>
+            </h1>
+
+            <p class="fs-5 mb-4"
+               style="color: #e0e7f3; line-height: 1.7;">
+                Accede a tus cursos, explora lecciones, consulta recursos
+                educativos y completa evaluaciones desde un solo lugar.
+            </p>
+
+            <a class="btn btn-light btn-lg fw-semibold px-4 py-3 rounded-3"
+               asp-controller="Account"
+               asp-action="Login">
+                Iniciar sesión
+                <span class="ms-2" aria-hidden="true">&rarr;</span>
+            </a>
+
+            <p class="small mt-3 mb-0" style="color: #c4cfe0;">
+                Tu espacio para aprender y desarrollar nuevas habilidades.
+            </p>
+        </div>
+    </section>
+
+    <!-- Presentación de funcionalidades -->
+    <section class="mb-5">
+        <div class="text-center mb-4">
+            <h2 class="h3 fw-bold mb-2">Todo lo que necesitas para aprender</h2>
+            <p class="text-muted mb-0">
+                Organiza tu aprendizaje de forma sencilla y estructurada.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-3 mb-3"
+                             style="width: 54px; height: 54px; background-color: #e8eef9; color: #1d2b4f;">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="28" height="28" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor"
+                                 stroke-width="1.7">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16ZM4 5.5v16M8 7h8M8 11h8" />
+                            </svg>
+                        </div>
+
+                        <h3 class="h5 fw-bold">Cursos por lecciones</h3>
+                        <p class="text-muted mb-0">
+                            Explora los contenidos de cada curso mediante
+                            lecciones organizadas para facilitar el aprendizaje.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-3 mb-3"
+                             style="width: 54px; height: 54px; background-color: #e8eef9; color: #1d2b4f;">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="28" height="28" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor"
+                                 stroke-width="1.7">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10l-7-7ZM13 3v7h7M8 14h8M8 18h8" />
+                            </svg>
+                        </div>
+
+                        <h3 class="h5 fw-bold">Recursos educativos</h3>
+                        <p class="text-muted mb-0">
+                            Consulta documentos, enlaces y otros materiales
+                            asociados a cada lección de tus cursos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-center rounded-3 mb-3"
+                             style="width: 54px; height: 54px; background-color: #e8eef9; color: #1d2b4f;">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="28" height="28" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor"
+                                 stroke-width="1.7">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M9 11l2 2 4-4M7 3h10a2 2 0 0 1 2 2v14l-7-3-7 3V5a2 2 0 0 1 2-2Z" />
+                            </svg>
+                        </div>
+
+                        <h3 class="h5 fw-bold">Evaluaciones</h3>
+                        <p class="text-muted mb-0">
+                            Comprueba tus conocimientos mediante actividades
+                            y evaluaciones relacionadas con cada lección.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Llamada final -->
+    <section class="text-center rounded-4 p-4 p-md-5 mb-4"
+             style="background-color: #f0f3f9;">
+        <h2 class="h4 fw-bold mb-2">¿Listo para comenzar?</h2>
+        <p class="text-muted mb-3">
+            Inicia sesión para acceder a las funcionalidades de EduLearn.
+        </p>
+
+        <a class="btn btn-primary px-4 rounded-3"
+           asp-controller="Account"
+           asp-action="Login">
+            Entrar a la plataforma
+        </a>
+    </section>
+}
+else
+{
+    <!-- ============ PANEL (con sesión) ============ -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Hola, @nombre</h1>
+            <p class="text-muted mb-0">
+                @if (Model.Rol == "Estudiante")
+                {
+                    <text>Continúa con tus cursos y evaluaciones.</text>
+                }
+                else if (Model.Rol == "Profesor")
+                {
+
+                    <text>Este es el resumen de tus cursos.</text>
+                }
+                else if (Model.Rol == "Administrador")
+                {
+
+                    <text>Resumen general de la plataforma.</text>
+                }
+            </p>
+        </div>
+
+        @if (Model.Rol == "Estudiante")
+        {
+            <a class="btn btn-primary" asp-controller="Inscripciones" asp-action="Catalogo">Explorar catálogo</a>
+        }
+        else if (Model.Rol == "Profesor" || Model.Rol == "Administrador")
+        {
+            <a class="btn btn-primary" asp-controller="Curso" asp-action="Index">Ver todos los cursos</a>
+        }
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row g-3 mb-4">
+        @foreach (var s in Model.Stats)
+        {
+            <div class="col-12 @(Model.Stats.Count == 3 ? "col-md-4" : "col-6 col-lg-3")">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="bg-@s.Color bg-opacity-10 text-@s.Color rounded-3 p-3">
+                            <span class="fs-3">@s.Emoji</span>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-1 small">@s.Titulo</p>
+                            <h3 class="fw-bold mb-0">@s.Valor</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+</div>
+
+<div class="row g-4">
+
+    <!-- Cursos -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h2 class="h5 fw-bold mb-0">
+                    @(Model.Rol == "Estudiante" ? "Mis cursos recientes"
+                                        : Model.Rol == "Profesor" ? "Mis cursos"
+                                        : "Cursos recientes")
+                </h2>
+            </div>
+
+            @if (Model.Cursos.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var c in Model.Cursos)
+                        {
+                            <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 py-3">
+                                <div>
+                                    <div class="fw-semibold">@c.Titulo</div>
+                                    <div class="small text-muted">
+                                        @c.Lecciones lecciones
+                                        @if (c.Inscritos.HasValue)
+                                        {
+                                            <text> · @c.Inscritos inscritos</text>
+                                        }
+                                        @if (!string.IsNullOrEmpty(c.Profesor))
+                                        {
+                                            <text> · Profesor: @c.Profesor</text>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       asp-controller="Curso" asp-action="Gestionar" asp-route-id="@c.CursoId">
+                                        @(Model.Rol == "Estudiante" ? "Entrar" : "Administrar")
+                                    </a>
+                                    @if (Model.Rol != "Estudiante")
+                                    {
+                                        <a class="btn btn-outline-secondary btn-sm"
+                                           asp-controller="Inscripciones" asp-action="Inscritos" asp-route-cursoId="@c.CursoId">
+                                            Inscritos
+                                        </a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="card-body text-center text-muted py-5">
+                        @if (Model.Rol == "Estudiante")
+                        {
+                            <p class="mb-2">Aún no estás inscrito en ningún curso.</p>
+                            <a asp-controller="Inscripciones" asp-action="Catalogo">Ver el catálogo</a>
+                        }
+                        else if (Model.Rol == "Profesor")
+                        {
+                            <p class="mb-0">Aún no tienes cursos asignados.</p>
+                        }
+                        else
+                        {
+                            <p class="mb-0">Todavía no hay cursos creados.</p>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+}

@@ -1,0 +1,80 @@
+﻿@model Aula.ViewModels.CatalogoVM
+@{
+    ViewData["Title"] = "Catálogo de cursos";
+}
+
+<div class="container-fluid py-4">
+
+    @if (TempData["Ok"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Ok"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Catálogo de cursos</h1>
+            <p class="text-muted mb-0">Explora los cursos disponibles e inscríbete.</p>
+        </div>
+
+        <form asp-action="Catalogo" method="get" class="d-flex gap-2">
+            <input type="search" name="q" value="@Model.Busqueda" class="form-control"
+                   placeholder="Buscar por título" aria-label="Buscar curso" />
+            <button type="submit" class="btn btn-outline-primary">Buscar</button>
+        </form>
+    </div>
+
+    @if (!Model.Cursos.Any())
+    {
+        <div class="alert alert-light border text-center py-4">
+            @(string.IsNullOrEmpty(Model.Busqueda)
+                    ? "Todavía no hay cursos disponibles."
+                    : $"No se encontraron cursos para “{Model.Busqueda}”.")
+    </div>
+        }
+
+    <div class="row g-3">
+        @foreach (var c in Model.Cursos)
+        {
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+
+                        <h2 class="h5 fw-bold mb-1 text-break">@c.Titulo</h2>
+                        <p class="small text-muted mb-2">
+                            Profesor: @(c.Profesor ?? "Sin asignar")
+                        </p>
+
+                        <p class="text-muted mb-3"
+                           style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                            @(string.IsNullOrWhiteSpace(c.Descripcion) ? "Sin descripción." : c.Descripcion)
+                        </p>
+
+                        <div class="mb-3">
+                            <span class="badge text-bg-light border text-dark">@c.TotalLecciones lecciones</span>
+                        </div>
+
+                        <div class="mt-auto">
+                            @if (c.Inscrito)
+                            {
+                                <a class="btn btn-outline-success w-100"
+                                   asp-controller="Curso" asp-action="Gestionar" asp-route-id="@c.CursoId">
+                                    Ya inscrito · Ir al curso
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-action="Inscribir" asp-route-cursoId="@c.CursoId" method="post">
+                                    <button type="submit" class="btn btn-primary w-100">Inscribirme</button>
+                                </form>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

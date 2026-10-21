@@ -1,0 +1,80 @@
+﻿@using Aula.Models
+@model Aula.ViewModels.RecursoFormViewModel
+@{
+    ViewData["Title"] = "Agregar recurso";
+}
+
+<div class="container py-4" style="max-width: 680px;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Curso" asp-action="Index" class="text-decoration-none">Mis cursos</a></li>
+            <li class="breadcrumb-item">
+                <a asp-controller="Curso" asp-action="Gestionar" asp-route-id="@Model.CursoId" class="text-decoration-none">Curso</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Agregar recurso</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h1 class="h4 fw-bold mb-1">Agregar recurso</h1>
+            <p class="text-muted mb-4">Lección: @Model.LeccionTitulo</p>
+
+            <form asp-action="Agregar" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="LeccionId" />
+                <input type="hidden" asp-for="CursoId" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Nombre" class="form-label fw-semibold">Nombre del recurso</label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Ej: Introducción a los algoritmos" />
+                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Tipo" class="form-label fw-semibold">Tipo de recurso</label>
+                    <select asp-for="Tipo" class="form-select" asp-items="Html.GetEnumSelectList<TipoRecurso>()"></select>
+                </div>
+
+                <div id="bloque-documento" class="mb-4">
+                    <label asp-for="Archivo" class="form-label fw-semibold">Archivo</label>
+                    <input asp-for="Archivo" type="file" class="form-control"
+                           accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip" />
+                    <div class="form-text">PDF, Word, PowerPoint, Excel, TXT o ZIP. Máximo 25 MB.</div>
+                    <span asp-validation-for="Archivo" class="text-danger small"></span>
+                </div>
+
+                <div id="bloque-video" class="mb-4 d-none">
+                    <label asp-for="Url" class="form-label fw-semibold">Enlace del video</label>
+                    <input asp-for="Url" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                    <span asp-validation-for="Url" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar recurso</button>
+                    <a class="btn btn-outline-secondary" asp-controller="Curso" asp-action="Gestionar" asp-route-id="@Model.CursoId">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const tipo = document.getElementById('Tipo');
+            const doc = document.getElementById('bloque-documento');
+            const vid = document.getElementById('bloque-video');
+
+            function actualizar() {
+                const esDocumento = tipo.value === '0';
+                doc.classList.toggle('d-none', !esDocumento);
+                vid.classList.toggle('d-none', esDocumento);
+            }
+            tipo.addEventListener('change', actualizar);
+            actualizar();
+        })();
+    </script>
+}

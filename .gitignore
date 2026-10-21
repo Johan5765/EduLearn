@@ -1,0 +1,32 @@
+﻿
+# Archivos generados por .NET
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Configuración local
+appsettings.Development.json
+appsettings.Local.json
+.env
+.env.*
+!.env.example
+
+# Bases de datos y respaldos locales
+*.mdf
+*.ldf
+*.bak
+*.sqlite
+*.db
+
+# Certificados y claves privadas
+*.pfx
+*.p12
+*.key
+*.pem
+
+# Registros
+*.log

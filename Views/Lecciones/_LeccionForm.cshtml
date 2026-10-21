@@ -1,0 +1,19 @@
+@model Aula.ViewModels.LeccionFormViewModel
+
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="CursoId" />
+<input type="hidden" asp-for="CursoTitulo" />
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+<div class="mb-3">
+    <label asp-for="Titulo" class="form-label fw-semibold">Título de la lección</label>
+    <input asp-for="Titulo" class="form-control" placeholder="Ej: Qué es un algoritmo" />
+    <span asp-validation-for="Titulo" class="text-danger small"></span>
+</div>
+
+<div class="mb-4">
+    <label asp-for="Orden" class="form-label fw-semibold">Orden</label>
+    <input asp-for="Orden" type="number" min="1" class="form-control" />
+    <span asp-validation-for="Orden" class="text-danger small"></span>
+</div>

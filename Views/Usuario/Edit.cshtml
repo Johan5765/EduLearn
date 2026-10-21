@@ -1,0 +1,99 @@
+﻿@model Aula.ViewModels.UsuarioEditVM
+
+@{
+    ViewData["Title"] = "Editar usuario";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0">Editar usuario</h4>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit"
+                          asp-route-id="@Model.UsuarioId"
+                          method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <input type="hidden"
+                               asp-for="UsuarioId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Nombre"
+                                   class="form-label">Nombre completo</label>
+                            <input asp-for="Nombre"
+                                   class="form-control" />
+                            <span asp-validation-for="Nombre"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Correo"
+                                   class="form-label">Correo electrónico</label>
+                            <input asp-for="Correo"
+                                   class="form-control" />
+                            <span asp-validation-for="Correo"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password"
+                                   class="form-label">
+                                Nueva contraseña (opcional)
+                            </label>
+                            <input asp-for="Password"
+                                   class="form-control"
+                                   placeholder="Dejar vacío para conservarla" />
+                            <span asp-validation-for="Password"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RolId"
+                                   class="form-label">Rol</label>
+                            <select asp-for="RolId"
+                                    asp-items="Model.Roles"
+                                    class="form-select">
+                                <option value="">Seleccione un rol</option>
+                            </select>
+                            <span asp-validation-for="RolId"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input asp-for="Activo"
+                                   class="form-check-input" />
+                            <label asp-for="Activo"
+                                   class="form-check-label">
+                                Usuario activo
+                            </label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Guardar cambios
+                            </button>
+
+                            <a asp-action="Index"
+                               class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

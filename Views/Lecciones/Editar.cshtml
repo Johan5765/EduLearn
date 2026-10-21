@@ -1,0 +1,33 @@
+@model Aula.ViewModels.LeccionFormViewModel
+@{ ViewData["Title"] = "Editar lección"; }
+
+<div class="container py-4" style="max-width: 640px;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Cursos" asp-action="Index" class="text-decoration-none">Mis cursos</a></li>
+            <li class="breadcrumb-item">
+                <a asp-controller="Cursos" asp-action="Gestionar" asp-route-id="@Model.CursoId" class="text-decoration-none">@Model.CursoTitulo</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Editar lección</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h1 class="h4 fw-bold mb-4">Editar lección</h1>
+
+            <form asp-action="Editar" asp-route-id="@Model.Id" method="post">
+                <partial name="_LeccionForm" model="Model" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <a class="btn btn-outline-secondary" asp-controller="Curso" asp-action="Gestionar" asp-route-id="@Model.CursoId">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
