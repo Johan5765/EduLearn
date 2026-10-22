@@ -135,7 +135,6 @@ namespace Aula.Controllers
 
 
 
-        [HttpPost]
         private async Task CargarRolesAsync(UsuarioCreateVM vm)
         {
             vm.Roles = await _context.Roles

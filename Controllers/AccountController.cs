@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace Aula.Controllers;
 
-public class AccountController(EduLearnDbContext dbContext,IPasswordHasher<Usuario> passwordHasher) : Controller
+public class AccountController(EduLearnDbContext _context,IPasswordHasher<Usuario> passwordHasher) : Controller
 {
     [HttpGet]
     [AllowAnonymous]
@@ -28,7 +28,7 @@ public class AccountController(EduLearnDbContext dbContext,IPasswordHasher<Usuar
         if (!ModelState.IsValid)
             return View(model);
 
-        var usuario = await dbContext.Usuarios
+        var usuario = await _context.Usuarios
             .Include(u => u.Rol)
             .FirstOrDefaultAsync(u =>
                 u.Correo == model.Correo && u.Activo);

@@ -11,6 +11,7 @@ namespace Aula.Controllers;
 [Authorize]
 public class CursoController(EduLearnDbContext _context) : Controller
 {
+    [Authorize(Roles = "Administrador,Profesor")]
     public async Task<IActionResult> Index()
     {
         var cursos = await _context.Cursos
@@ -29,6 +30,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
         return View(cursos);
     }
 
+    [Authorize(Roles = "Administrador,Profesor")]
     public async Task<IActionResult> Create()
     {
         var vm = new CursoCreateVM();
@@ -38,6 +40,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CursoCreateVM vm)
@@ -69,6 +72,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Roles = "Administrador,Profesor")]
     public async Task<IActionResult> Edit(int id)
     {
         var curso = await _context.Cursos
@@ -91,6 +95,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, CursoEditVM vm)
@@ -127,6 +132,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
