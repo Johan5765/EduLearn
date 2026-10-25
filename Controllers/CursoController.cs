@@ -5,18 +5,29 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.ConstrainedExecution;
 using System.Security.Claims;
 
 namespace Aula.Controllers;
-[Authorize]
+[Authorize(Roles = "Administrador,Profesor")]
 public class CursoController(EduLearnDbContext _context) : Controller
 {
     [Authorize(Roles = "Administrador,Profesor")]
     public async Task<IActionResult> Index()
     {
-        var cursos = await _context.Cursos
-            .Include(c => c.Profesor)
-            .Where(c => c.Profesor.Rol.Nombre == "Profesor")
+
+        var query = _context.Cursos.AsQueryable();
+
+        if (User.IsInRole("Profesor"))
+        {
+            var usuarioId = int.Parse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier)!
+            );
+
+            query = query.Where(c => c.ProfesorId == usuarioId);
+        }
+
+        var cursos = await query
             .Select(c => new CursoListVM
             {
                 CursoId = c.CursoId,
@@ -45,6 +56,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CursoCreateVM vm)
     {
+        
         if (!await EsProfesorAsync(vm.ProfesorId))
         {
             ModelState.AddModelError(
@@ -79,7 +91,9 @@ public class CursoController(EduLearnDbContext _context) : Controller
             .FirstOrDefaultAsync(c => c.CursoId == id);
 
         if (curso == null)
+        {
             return NotFound();
+        }
 
         var vm = new CursoEditVM
         {
@@ -101,7 +115,9 @@ public class CursoController(EduLearnDbContext _context) : Controller
     public async Task<IActionResult> Edit(int id, CursoEditVM vm)
     {
         if (id != vm.CursoId)
+        {
             return NotFound();
+        }
 
         if (!await EsProfesorAsync(vm.ProfesorId))
         {
@@ -116,8 +132,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
             return View(vm);
         }
 
-        var curso = await _context.Cursos
-            .FirstOrDefaultAsync(c => c.CursoId == id);
+        var curso = await _context.Cursos.FirstOrDefaultAsync(c => c.CursoId == id);
 
         if (curso == null)
             return NotFound();
@@ -141,7 +156,16 @@ public class CursoController(EduLearnDbContext _context) : Controller
             .FirstOrDefaultAsync(c => c.CursoId == id);
 
         if (curso == null)
+        {
             return NotFound();
+        }
+        var usuarioId = int.Parse( User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var usuarioRol = User.FindFirstValue(ClaimTypes.Role);
+
+        if (curso.ProfesorId != usuarioId && usuarioRol != "Administrador")
+        {
+            return NotFound();
+        }
 
         _context.Cursos.Remove(curso);
         await _context.SaveChangesAsync();
@@ -174,8 +198,7 @@ public class CursoController(EduLearnDbContext _context) : Controller
         else if (esEstudiante)
         {
             // AJUSTA: nombre del DbSet y de las columnas de tu tabla de inscripciones
-            query = query.Where(c => _context.Inscripciones
-                .Any(i => i.CursoId == c.CursoId && i.EstudianteId == userId));
+            query = query.Where(c => _context.Inscripciones.Any(i => i.CursoId == c.CursoId && i.EstudianteId == userId));
         }
         else
         {

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aula.Controllers
 {
-    [Authorize]
+    [Authorize(Roles =("Administrador"))]
     public class UsuarioController(EduLearnDbContext _context,IPasswordHasher<Usuario> _passwordHasher) : Controller
     {
         public IActionResult Index()

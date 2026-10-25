@@ -1,4 +1,5 @@
-﻿@model Aula.ViewModels.CursoEditVM
+﻿@using System.Security.Claims
+@model Aula.ViewModels.CursoEditVM
 
 @{
     ViewData["Title"] = "Editar curso";
@@ -22,16 +23,29 @@
         <textarea asp-for="Descripcion" class="form-control"></textarea>
         <span asp-validation-for="Descripcion" class="text-danger"></span>
     </div>
-
-    <div class="mb-3">
-        <label class="form-label">Profesor</label>
-        <select asp-for="ProfesorId"
-                asp-items="ViewBag.Profesores"
-                class="form-select">
-            <option value="">Seleccione un profesor</option>
-        </select>
-        <span asp-validation-for="ProfesorId" class="text-danger"></span>
-    </div>
+    @if (User.IsInRole("Profesor"))
+    {
+        <div class="mb-3">
+            <label class="form-label">Profesor</label>
+            <select asp-for="ProfesorId"
+                    class="form-select">
+                <option value="@User.FindFirstValue(ClaimTypes.NameIdentifier)">@User.Identity?.Name</option>
+            </select>
+            <span asp-validation-for="ProfesorId" class="text-danger"></span>
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <label class="form-label">Profesor</label>
+            <select asp-for="ProfesorId"
+                    asp-items="ViewBag.Profesores"
+                    class="form-select">
+                <option value="">Seleccione un profesor</option>
+            </select>
+            <span asp-validation-for="ProfesorId" class="text-danger"></span>
+        </div>
+    }
 
     <div class="form-check mb-3">
         <input asp-for="Activo" class="form-check-input" />

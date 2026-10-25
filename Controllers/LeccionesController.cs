@@ -10,7 +10,7 @@ namespace Aula.Controllers;
 
 // AJUSTA: AulaDbContext, Leccione (entidad), _db.Lecciones y _db.Cursos
 // según los nombres que generó tu scaffold.
-[Authorize(Roles = "Profesor")]
+[Authorize(Roles = "Administrador,Profesor")]
 public class LeccionesController(EduLearnDbContext _context) : Controller
 {
     
