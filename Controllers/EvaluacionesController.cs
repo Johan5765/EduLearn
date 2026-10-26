@@ -2,6 +2,7 @@
 using Aula.Models;
 using Aula.Services;
 using Aula.ViewModels;
+using Aula.Views;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace Aula.Controllers;
 // AJUSTA: AulaDbContext, Evaluacione, Leccione, Pregunta y los DbSet
 // (Evaluaciones, Lecciones, Preguntas) según tu scaffold.
 // Se asume que Evaluacione tiene la colección "Pregunta" (como en tu consulta de Gestionar).
-[Authorize(Roles = "Administrador,Profesor")]
+[Authorize]
 public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoService _acceso) : Controller
 {
     
@@ -32,21 +33,50 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
         return (ev, leccion);
     }
 
-    private static EvaluacionEditViewModel ConstruirVm(Evaluacione ev, Leccione leccion, string? titulo = null) => new()
+    private async Task<EvaluacionEditViewModel> ConstruirVmAsync(Evaluacione ev, Leccione leccion, string? titulo = null)
     {
-        Id = ev.Id,
-        LeccionId = ev.LeccionId,
-        CursoId = leccion.CursoId,
-        LeccionTitulo = leccion.Titulo,
-        Titulo = titulo ?? ev.Titulo,
-        Preguntas = ev.Pregunta
+        var preguntas = await _context.Preguntas
+            .Where(p => p.EvaluacionId == ev.Id)
             .OrderBy(p => p.Id)
-            .Select(p => new PreguntaItemVM { Id = p.Id, Enunciado = p.Enunciado })
-            .ToList()
-    };
+            .ToListAsync();
+
+        var preguntasVm = new List<PreguntaItemVM>();
+
+        foreach (var p in preguntas)
+        {
+            var opciones = await _context.OpcionesRespuesta
+                .Where(o => o.PreguntaId == p.Id)
+                .OrderBy(o => o.Id)
+                .Select(o => new OpcionItemVM
+                {
+                    Id = o.Id,
+                    Texto = o.Texto,
+                    EsCorrecta = o.EsCorrecta
+                })
+                .ToListAsync();
+
+            preguntasVm.Add(new PreguntaItemVM
+            {
+                Id = p.Id,
+                Enunciado = p.Enunciado,
+                Opciones = opciones
+            });
+        }
+
+        return new EvaluacionEditViewModel
+        {
+            Id = ev.Id,
+            LeccionId = ev.LeccionId,
+            CursoId = leccion.CursoId,
+            LeccionTitulo = leccion.Titulo,
+            Titulo = titulo ?? ev.Titulo,
+            Preguntas = preguntasVm
+        };
+    }
 
     // ---------- CREAR ----------
     // GET /Evaluaciones/Crear?leccionId=3
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpGet]
     public async Task<IActionResult> Crear(int leccionId)
     {
@@ -63,6 +93,7 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
     }
 
     // POST /Evaluaciones/Crear
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Crear(EvaluacionFormViewModel vm)
     {
@@ -87,16 +118,18 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
 
     // ---------- EDITAR ----------
     // GET /Evaluaciones/Editar/5
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpGet]
     public async Task<IActionResult> Editar(int id)
     {
         var (ev, leccion) = await CargarEditableAsync(id);
         if (ev == null || leccion == null) return NotFound();
 
-        return View(ConstruirVm(ev, leccion));
+        return View(await ConstruirVmAsync(ev, leccion));
     }
 
     // POST /Evaluaciones/Editar/5  (guarda solo el título)
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Editar(int id, EvaluacionFormViewModel vm)
     {
@@ -104,7 +137,7 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
         if (ev == null || leccion == null) return NotFound();
 
         if (!ModelState.IsValid)
-            return View(ConstruirVm(ev, leccion, vm.Titulo));
+            return View(await ConstruirVmAsync(ev, leccion, vm.Titulo));
 
         ev.Titulo = vm.Titulo.Trim();
         await _context.SaveChangesAsync();
@@ -115,6 +148,7 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
 
     // ---------- PREGUNTAS ----------
     // POST /Evaluaciones/AgregarPregunta
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> AgregarPregunta(int evaluacionId, string? enunciado)
     {
@@ -141,6 +175,7 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
     }
 
     // POST /Evaluaciones/EliminarPregunta/9
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> EliminarPregunta(int id)
     {
@@ -156,9 +191,98 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
         TempData["Ok"] = "Pregunta eliminada.";
         return RedirectToAction(nameof(Editar), new { id = pregunta.EvaluacionId });
     }
+    // ---------- OPCIONES DE RESPUESTA ----------
+    [Authorize(Roles = "Administrador,Profesor")]
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> AgregarOpcion(int preguntaId, string? texto, bool esCorrecta = false)
+    {
+        var pregunta = await _context.Preguntas.FirstOrDefaultAsync(p => p.Id == preguntaId);
+        if (pregunta == null) return NotFound();
+
+        var (ev, _) = await CargarEditableAsync(pregunta.EvaluacionId);
+        if (ev == null) return NotFound();
+
+        texto = texto?.Trim();
+        if (string.IsNullOrWhiteSpace(texto) || texto.Length > 300)
+        {
+            TempData["Error"] = "La opción es obligatoria y no puede superar los 300 caracteres.";
+            return RedirectToAction(nameof(Editar), new { id = ev.Id });
+        }
+
+        if (esCorrecta)
+        {
+            var opciones = await _context.OpcionesRespuesta
+                .Where(o => o.PreguntaId == preguntaId)
+                .ToListAsync();
+
+            foreach (var opcion in opciones)
+                opcion.EsCorrecta = false;
+        }
+
+        _context.OpcionesRespuesta.Add(new OpcionesRespuestum
+        {
+            PreguntaId = preguntaId,
+            Texto = texto,
+            EsCorrecta = esCorrecta
+        });
+
+        await _context.SaveChangesAsync();
+        TempData["Ok"] = "Opción agregada correctamente.";
+
+        return RedirectToAction(nameof(Editar), new { id = ev.Id });
+    }
+    
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarcarOpcionCorrecta(int id)
+    {
+        var opcion = await _context.OpcionesRespuesta
+            .FirstOrDefaultAsync(o => o.Id == id);
+        if (opcion == null) return NotFound();
+
+        var pregunta = await _context.Preguntas
+            .FirstOrDefaultAsync(p => p.Id == opcion.PreguntaId);
+        if (pregunta == null) return NotFound();
+
+        var (ev, _) = await CargarEditableAsync(pregunta.EvaluacionId);
+        if (ev == null) return NotFound();
+
+        var opciones = await _context.OpcionesRespuesta
+            .Where(o => o.PreguntaId == pregunta.Id)
+            .ToListAsync();
+
+        foreach (var item in opciones)
+            item.EsCorrecta = item.Id == id;
+
+        await _context.SaveChangesAsync();
+        TempData["Ok"] = "Respuesta correcta actualizada.";
+
+        return RedirectToAction(nameof(Editar), new { id = ev.Id });
+    }
+
+    [Authorize(Roles = "Administrador,Profesor")]
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> EliminarOpcion(int id)
+    {
+        var opcion = await _context.OpcionesRespuesta.FirstOrDefaultAsync(o => o.Id == id);
+        if (opcion == null) return NotFound();
+
+        var pregunta = await _context.Preguntas
+            .FirstOrDefaultAsync(p => p.Id == opcion.PreguntaId);
+        if (pregunta == null) return NotFound();
+
+        var (ev, _) = await CargarEditableAsync(pregunta.EvaluacionId);
+        if (ev == null) return NotFound();
+
+        _context.OpcionesRespuesta.Remove(opcion);
+        await _context.SaveChangesAsync();
+
+        TempData["Ok"] = "Opción eliminada.";
+        return RedirectToAction(nameof(Editar), new { id = ev.Id });
+    }
 
     // ---------- ELIMINAR EVALUACIÓN ----------
     // POST /Evaluaciones/Eliminar/5
+    [Authorize(Roles = "Administrador,Profesor")]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Eliminar(int id)
     {
@@ -170,5 +294,59 @@ public class EvaluacionesController(EduLearnDbContext _context,CursoAccesoServic
 
         TempData["Ok"] = "Evaluación eliminada.";
         return RedirectToAction("Gestionar", "Curso", new { id = leccion.CursoId });
+    }
+
+    [Authorize(Roles = "Estudiante")]
+    [HttpGet]
+    public async Task<IActionResult> Resolver(int id)
+    {
+        var evaluacion = await _context.Evaluaciones
+            .Include(e => e.Pregunta)
+                .ThenInclude(p => p.OpcionesRespuesta)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (evaluacion == null)
+            return NotFound();
+
+        return View(evaluacion);
+    }
+
+    [Authorize(Roles = "Estudiante")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Resolver(int id, Dictionary<int, int> respuestas)
+    {
+        var evaluacion = await _context.Evaluaciones
+            .Include(e => e.Pregunta)
+                .ThenInclude(p => p.OpcionesRespuesta)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (evaluacion == null)
+            return NotFound();
+
+        int total = evaluacion.Pregunta.Count;
+        int correctas = 0;
+
+        foreach (var pregunta in evaluacion.Pregunta)
+        {
+            if (respuestas.TryGetValue(pregunta.Id, out int opcionId))
+            {
+                var opcion = pregunta.OpcionesRespuesta
+                    .FirstOrDefault(o => o.Id == opcionId);
+
+                if (opcion?.EsCorrecta == true)
+                    correctas++;
+            }
+        }
+
+        ViewBag.Calificacion = total > 0
+            ? Math.Round((decimal)correctas / total * 100, 2)
+            : 0;
+
+        ViewBag.Correctas = correctas;
+        ViewBag.Total = total;
+        ViewBag.Resuelta = true;
+
+        return View(evaluacion);
     }
 }

@@ -1,0 +1,78 @@
+﻿@model Aula.Models.Evaluacione
+
+@{
+    ViewData["Title"] = "Resolver evaluación";
+}
+
+<div class="container py-4">
+    <h2 class="mb-2">@Model.Titulo</h2>
+    <p class="text-muted">Selecciona una respuesta para cada pregunta.</p>
+
+    @if (ViewBag.Resuelta == true)
+    {
+        <div class="alert alert-info">
+            Resultado: <strong>@ViewBag.Calificacion%</strong>
+            <br />
+            Respuestas correctas: @ViewBag.Correctas de @ViewBag.Total
+        </div>
+    }
+
+    @if (Model.Pregunta.Any())
+    {
+        <form asp-action="Resolver" asp-controller="Evaluaciones"
+              asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+
+            @{
+                int numero = 1;
+            }
+
+            @foreach (var pregunta in Model.Pregunta)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            @numero. @pregunta.Enunciado
+                        </h5>
+
+                        @foreach (var opcion in pregunta.OpcionesRespuesta)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="respuestas[@pregunta.Id]"
+                                       value="@opcion.Id"
+                                       id="opcion_@opcion.Id"
+                                       required
+                                       disabled="@(ViewBag.Resuelta == true)" />
+
+                                <label class="form-check-label"
+                                       for="opcion_@opcion.Id">
+                                    @opcion.Texto
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                numero++;
+            }
+
+            @if (ViewBag.Resuelta != true)
+            {
+                <button type="submit" class="btn btn-primary">
+                    Enviar respuestas
+                </button>
+            }
+        </form>
+    }
+    else
+    {
+        <p class="text-muted">Esta evaluación todavía no tiene preguntas.</p>
+    }
+
+    <a href="javascript:history.back()"
+       class="btn btn-outline-secondary mt-3">
+        Volver
+    </a>
+</div>

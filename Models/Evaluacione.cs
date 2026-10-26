@@ -11,6 +11,8 @@ public partial class Evaluacione
 
     public string Titulo { get; set; } = null!;
 
+    public virtual ICollection<IntentosEvaluacion> IntentosEvaluacions { get; set; } = new List<IntentosEvaluacion>();
+
     public virtual Leccione Leccion { get; set; } = null!;
 
     public virtual ICollection<Pregunta> Pregunta { get; set; } = new List<Pregunta>();

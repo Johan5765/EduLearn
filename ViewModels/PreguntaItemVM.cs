@@ -4,5 +4,6 @@
     {
         public int Id { get; set; }
         public string Enunciado { get; set; } = "";
+        public List<OpcionItemVM> Opciones { get; set; } = new();
     }
 }

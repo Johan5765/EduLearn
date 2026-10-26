@@ -9,7 +9,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Security.Claims;
 
 namespace Aula.Controllers;
-[Authorize(Roles = "Administrador,Profesor")]
+[Authorize]
 public class CursoController(EduLearnDbContext _context) : Controller
 {
     [Authorize(Roles = "Administrador,Profesor")]
@@ -245,47 +245,6 @@ public class CursoController(EduLearnDbContext _context) : Controller
     }
 
 
-
-    //public async Task<IActionResult> Gestionar(int id)
-    //{
-    //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    //    var vm = await _context.Cursos
-    //        .AsNoTracking()
-    //        .Where(c => c.CursoId == id && c.ProfesorId == int.Parse(userId))   // solo su propio curso
-    //        .Select(c => new CursoGestionViewModel
-    //        {
-    //            CursoId = c.CursoId,
-    //            Titulo = c.Titulo,
-    //            Descripcion = c.Descripcion,
-    //            TotalLecciones = c.Lecciones.Count,
-    //            TotalRecursos = c.Lecciones.SelectMany(l => l.Recursos).Count(),
-    //            TotalEvaluaciones = c.Lecciones.SelectMany(l => l.Evaluaciones).Count(),
-    //            Lecciones = c.Lecciones.OrderBy(l => l.Orden).Select(l => new LeccionGestionVM
-    //            {
-    //                Id = l.Id,
-    //                Orden = l.Orden,
-    //                Titulo = l.Titulo,
-    //                Recursos = l.Recursos.Select(r => new RecursoVM
-    //                {
-    //                    Id = r.Id,
-    //                    Nombre = r.Nombre,
-    //                    Tipo = r.Tipo,
-    //                    Url = r.Url
-    //                }).ToList(),
-    //                Evaluaciones = l.Evaluaciones.Select(e => new EvaluacionVM
-    //                {
-    //                    Id = e.Id,
-    //                    Titulo = e.Titulo,
-    //                    CantidadPreguntas = e.Pregunta.Count
-    //                }).ToList()
-    //            }).ToList()
-    //        })
-    //        .FirstOrDefaultAsync();
-
-    //    if (vm == null) return NotFound();
-    //    return View(vm);
-    //}
 
 
     private async Task CargarProfesoresAsync(int? profesorIdSeleccionado)

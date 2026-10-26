@@ -319,14 +319,21 @@
                                                             Editar evaluación
                                                         </a>
 
-                                                        <form asp-controller="Evaluaciones"
-                                                              asp-action="Eliminar"
-                                                              asp-route-id="@e.Id"
-                                                              method="post"
+                                                        <form asp-controller="Evaluaciones" asp-action="Eliminar"
+                                                              asp-route-id="@e.Id" method="post"
                                                               onsubmit="return confirm('¿Eliminar esta evaluación y todas sus preguntas?');">
                                                             <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
                                                         </form>
                                                     </div>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-primary btn-sm"
+                                                       asp-controller="Evaluaciones"
+                                                       asp-action="Resolver"
+                                                       asp-route-id="@e.Id">
+                                                        Realizar evaluación
+                                                    </a>
                                                 }
 
                                             </li>

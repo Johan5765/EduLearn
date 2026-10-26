@@ -59,32 +59,80 @@
 
             @if (Model.Preguntas.Any())
             {
-                <ol class="list-group list-group-numbered mb-4">
-                    @foreach (var p in Model.Preguntas)
-                    {
-                        <li class="list-group-item d-flex justify-content-between align-items-start gap-3">
-                            <div class="ms-2 me-auto text-break">@p.Enunciado</div>
-
+                @foreach (var p in Model.Preguntas)
+                {
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                            <strong>@p.Enunciado</strong>
                             <form asp-action="EliminarPregunta" asp-route-id="@p.Id" method="post"
-                                  onsubmit="return confirm('¿Eliminar esta pregunta?');">
+                                  onsubmit="return confirm('¿Eliminar esta pregunta y sus opciones?');">
                                 <button type="submit" class="btn btn-outline-danger btn-sm">Quitar</button>
                             </form>
-                        </li>
-                    }
-                </ol>
+                        </div>
+
+                        <h3 class="h6">Opciones de respuesta</h3>
+
+                        @if (p.Opciones.Any())
+                        {
+                            @foreach (var opcion in p.Opciones)
+                            {
+                                <div class="d-flex justify-content-between align-items-center gap-2 border rounded p-2 mb-2">
+                                    <div class="text-break">
+                                        @opcion.Texto
+                                        @if (opcion.EsCorrecta)
+                                        {
+                                            <span class="badge text-bg-success ms-1">Correcta</span>
+                                        }
+                                    </div>
+                                    <div class="d-flex gap-1">
+                                        @if (!opcion.EsCorrecta)
+                                        {
+                                            <form asp-action="MarcarOpcionCorrecta" method="post">
+                                                <input type="hidden" name="id" value="@opcion.Id" />
+                                                <button class="btn btn-outline-success btn-sm" type="submit">Marcar correcta</button>
+                                            </form>
+                                        }
+                                        <form asp-action="EliminarOpcion" asp-route-id="@opcion.Id" method="post"
+                                              onsubmit="return confirm('¿Eliminar esta opción?');">
+                                            <button class="btn btn-outline-danger btn-sm" type="submit">Quitar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted small">Esta pregunta todavía no tiene opciones.</p>
+                        }
+
+                        <form asp-action="AgregarOpcion" method="post" class="mt-3">
+                            <input type="hidden" name="preguntaId" value="@p.Id" />
+                            <label class="form-label">Nueva opción</label>
+                            <input type="text" name="texto" class="form-control mb-2"
+                                   maxlength="300" required placeholder="Escribe una respuesta" />
+                            <div class="form-check mb-2">
+                                <input type="checkbox" name="esCorrecta" value="true"
+                                       class="form-check-input" id="correcta_@p.Id" />
+                                <label class="form-check-label" for="correcta_@p.Id">Es la respuesta correcta</label>
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Agregar opción</button>
+                        </form>
+                    </div>
+                }
             }
             else
             {
                 <p class="text-muted">Esta evaluación todavía no tiene preguntas.</p>
             }
 
+            <hr />
+
             <form asp-action="AgregarPregunta" method="post">
                 <input type="hidden" name="evaluacionId" value="@Model.Id" />
-
                 <label for="enunciado" class="form-label fw-semibold">Nueva pregunta</label>
-                <textarea id="enunciado" name="enunciado" class="form-control mb-2" rows="3"
-                          maxlength="500" placeholder="Escribe el enunciado de la pregunta"></textarea>
-
+                <textarea id="enunciado" name="enunciado" class="form-control mb-2"
+                          rows="3" maxlength="500" required
+                          placeholder="Escribe el enunciado de la pregunta"></textarea>
                 <button type="submit" class="btn btn-dark btn-sm">+ Agregar pregunta</button>
             </form>
         </div>

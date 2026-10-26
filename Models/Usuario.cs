@@ -19,5 +19,7 @@ public partial class Usuario
 
     public virtual ICollection<Curso> Cursos { get; set; } = new List<Curso>();
 
+    public virtual ICollection<IntentosEvaluacion> IntentosEvaluacions { get; set; } = new List<IntentosEvaluacion>();
+
     public virtual Role Rol { get; set; } = null!;
 }

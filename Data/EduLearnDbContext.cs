@@ -22,17 +22,23 @@ public partial class EduLearnDbContext : DbContext
 
     public virtual DbSet<Inscripcione> Inscripciones { get; set; }
 
+    public virtual DbSet<IntentosEvaluacion> IntentosEvaluacions { get; set; }
+
     public virtual DbSet<Leccione> Lecciones { get; set; }
+
+    public virtual DbSet<OpcionesRespuestum> OpcionesRespuesta { get; set; }
 
     public virtual DbSet<Pregunta> Preguntas { get; set; }
 
     public virtual DbSet<Recurso> Recursos { get; set; }
 
+    public virtual DbSet<RespuestasEstudiante> RespuestasEstudiantes { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Curso>(entity =>
@@ -73,6 +79,26 @@ public partial class EduLearnDbContext : DbContext
                 .HasConstraintName("FK__Inscripci__Curso__4F7CD00D");
         });
 
+        modelBuilder.Entity<IntentosEvaluacion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Intentos__3214EC07C3C35C42");
+
+            entity.ToTable("IntentosEvaluacion");
+
+            entity.Property(e => e.Calificacion).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.FechaInicio).HasDefaultValueSql("(sysdatetime())");
+
+            entity.HasOne(d => d.Estudiante).WithMany(p => p.IntentosEvaluacions)
+                .HasForeignKey(d => d.EstudianteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__IntentosE__Estud__6C190EBB");
+
+            entity.HasOne(d => d.Evaluacion).WithMany(p => p.IntentosEvaluacions)
+                .HasForeignKey(d => d.EvaluacionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__IntentosE__Evalu__6B24EA82");
+        });
+
         modelBuilder.Entity<Leccione>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Leccione__3214EC07140FF5E3");
@@ -82,6 +108,17 @@ public partial class EduLearnDbContext : DbContext
             entity.HasOne(d => d.Curso).WithMany(p => p.Lecciones)
                 .HasForeignKey(d => d.CursoId)
                 .HasConstraintName("FK__Lecciones__Curso__4316F928");
+        });
+
+        modelBuilder.Entity<OpcionesRespuestum>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Opciones__3214EC0714EF7CDF");
+
+            entity.Property(e => e.Texto).HasMaxLength(300);
+
+            entity.HasOne(d => d.Pregunta).WithMany(p => p.OpcionesRespuesta)
+                .HasForeignKey(d => d.PreguntaId)
+                .HasConstraintName("FK__OpcionesR__Pregu__6754599E");
         });
 
         modelBuilder.Entity<Pregunta>(entity =>
@@ -105,6 +142,29 @@ public partial class EduLearnDbContext : DbContext
             entity.HasOne(d => d.Leccion).WithMany(p => p.Recursos)
                 .HasForeignKey(d => d.LeccionId)
                 .HasConstraintName("FK__Recursos__Leccio__45F365D3");
+        });
+
+        modelBuilder.Entity<RespuestasEstudiante>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Respuest__3214EC0763C8DDA9");
+
+            entity.ToTable("RespuestasEstudiante");
+
+            entity.Property(e => e.PuntosObtenidos).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.RespuestaTexto).HasMaxLength(1000);
+
+            entity.HasOne(d => d.Intento).WithMany(p => p.RespuestasEstudiantes)
+                .HasForeignKey(d => d.IntentoId)
+                .HasConstraintName("FK__Respuesta__Inten__70DDC3D8");
+
+            entity.HasOne(d => d.OpcionSeleccionada).WithMany(p => p.RespuestasEstudiantes)
+                .HasForeignKey(d => d.OpcionSeleccionadaId)
+                .HasConstraintName("FK__Respuesta__Opcio__72C60C4A");
+
+            entity.HasOne(d => d.Pregunta).WithMany(p => p.RespuestasEstudiantes)
+                .HasForeignKey(d => d.PreguntaId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Respuesta__Pregu__71D1E811");
         });
 
         modelBuilder.Entity<Role>(entity =>
