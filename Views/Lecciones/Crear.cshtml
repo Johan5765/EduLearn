@@ -4,9 +4,9 @@
 <div class="container py-4" style="max-width: 640px;">
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="Cursos" asp-action="Index" class="text-decoration-none">Mis cursos</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Curso" asp-action="Index" class="text-decoration-none">Mis cursos</a></li>
             <li class="breadcrumb-item">
-                <a asp-controller="Cursos" asp-action="Gestionar" asp-route-id="@Model.CursoId" class="text-decoration-none">@Model.CursoTitulo</a>
+                <a asp-controller="Curso" asp-action="Gestionar" asp-route-id="@Model.CursoId" class="text-decoration-none">@Model.CursoTitulo</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Nueva lección</li>
         </ol>

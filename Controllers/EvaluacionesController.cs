@@ -2,7 +2,6 @@
 using Aula.Models;
 using Aula.Services;
 using Aula.ViewModels;
-using Aula.Views;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

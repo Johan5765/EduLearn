@@ -59,9 +59,9 @@ namespace Aula.Controllers
 
             vm.Stats = new List<StatCardVM>
             {
-                new() { Titulo = "Cursos inscritos", Valor = totalCursos.ToString(), Emoji = "📚", Color = "primary" },
-                new() { Titulo = "Lecciones", Valor = totalLecciones.ToString(), Emoji = "📁", Color = "success" },
-                new() { Titulo = "Evaluaciones", Valor = totalEvaluaciones.ToString(), Emoji = "📝", Color = "warning" }
+                new() { Titulo = "Cursos inscritos", Valor = totalCursos.ToString(), Emoji = "book-open", Color = "primary" },
+                new() { Titulo = "Lecciones", Valor = totalLecciones.ToString(), Emoji = "notebook-text", Color = "success" },
+                new() { Titulo = "Evaluaciones", Valor = totalEvaluaciones.ToString(), Emoji = "clipboard-check", Color = "warning" }
             };
 
             vm.Cursos = await (
@@ -93,10 +93,10 @@ namespace Aula.Controllers
 
             vm.Stats = new List<StatCardVM>
             {
-                new() { Titulo = "Mis cursos", Valor = totalCursos.ToString(), Emoji = "📚", Color = "primary" },
-                new() { Titulo = "Lecciones", Valor = totalLecciones.ToString(), Emoji = "📁", Color = "success" },
-                new() { Titulo = "Evaluaciones", Valor = totalEvaluaciones.ToString(), Emoji = "📝", Color = "warning" },
-                new() { Titulo = "Estudiantes", Valor = totalEstudiantes.ToString(), Emoji = "🎓", Color = "info" }
+                new() { Titulo = "Mis cursos", Valor = totalCursos.ToString(), Emoji = "book-open", Color = "primary" },
+                new() { Titulo = "Lecciones", Valor = totalLecciones.ToString(), Emoji = "notebook-text", Color = "success" },
+                new() { Titulo = "Evaluaciones", Valor = totalEvaluaciones.ToString(), Emoji = "clipboard-check", Color = "warning" },
+                new() { Titulo = "Estudiantes", Valor = totalEstudiantes.ToString(), Emoji = "users", Color = "info" }
             };
 
             vm.Cursos = await cursos
@@ -123,10 +123,10 @@ namespace Aula.Controllers
 
             vm.Stats = new List<StatCardVM>
             {
-                new() { Titulo = "Cursos", Valor = totalCursos.ToString(), Emoji = "📚", Color = "primary" },
-                new() { Titulo = "Profesores", Valor = totalProfesores.ToString(), Emoji = "👨‍🏫", Color = "success" },
-                new() { Titulo = "Estudiantes", Valor = totalEstudiantes.ToString(), Emoji = "🎓", Color = "info" },
-                new() { Titulo = "Inscripciones", Valor = totalInscripciones.ToString(), Emoji = "✅", Color = "warning" }
+                new() { Titulo = "Cursos", Valor = totalCursos.ToString(), Emoji = "book-open", Color = "primary" },
+                new() { Titulo = "Profesores", Valor = totalProfesores.ToString(), Emoji = "hat-glasses", Color = "success" },
+                new() { Titulo = "Estudiantes", Valor = totalEstudiantes.ToString(), Emoji = "users", Color = "info" },
+                new() { Titulo = "Inscripciones", Valor = totalInscripciones.ToString(), Emoji = "clipboard-check", Color = "warning" }
             };
 
             vm.Cursos = await _context.Cursos.AsNoTracking()
